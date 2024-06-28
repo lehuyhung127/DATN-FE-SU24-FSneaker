@@ -155,10 +155,10 @@ const Product = () => {
             width: '15%',
             render: (_, record) => (
                 <Space size='middle'>
-                    <Button type='primary' onClick={() => navigateToDetail(record._id)} ghost>
+                    <Button onClick={() => navigateToDetail(record._id)}>
                         <InfoCircleOutlined style={{ display: 'inline-flex' }} />
                     </Button>
-                    <Button type='primary' onClick={() => navigateToEdit(record._id)} ghost>
+                    <Button onClick={() => navigateToEdit(record._id)}>
                         <EditOutlined style={{ display: 'inline-flex' }} />
                     </Button>
                     <Popconfirm
@@ -170,7 +170,7 @@ const Product = () => {
                         okText='Đồng ý'
                         cancelText='Không'
                     >
-                        <Button type='primary' danger>
+                        <Button danger>
                             <DeleteOutlined style={{ display: 'inline-flex' }} />
                         </Button>
                     </Popconfirm>

@@ -55,6 +55,7 @@ const OrderList: React.FC = () => {
 
         if (response?.data) {
             setData(response?.data)
+            console.log(response.data)
         } else {
             setData([])
         }
@@ -77,14 +78,6 @@ const OrderList: React.FC = () => {
             dataIndex: 'user_id',
             key: 'user_id',
             render: (value: IOrder['user_id']) => value && value?.userName
-        },
-        {
-            title: 'Số SP',
-            dataIndex: 'productDetails',
-            key: 'productDetails',
-            render: (value: IOrder['productDetails']) => {
-                return <p>{getNumTotalItems(value)}</p>
-            }
         },
         {
             title: 'Tổng đơn hàng',
@@ -129,20 +122,16 @@ const OrderList: React.FC = () => {
             render: (_, record) => (
                 <Space size='middle'>
                     <Button
-                        type='primary'
                         onClick={() => {
                             navigateToDetail(record._id)
                         }}
-                        ghost
                     >
                         <InfoCircleOutlined style={{ display: 'inline-flex' }} />
                     </Button>
                     <Button
-                        type='primary'
                         onClick={() => {
                             onPressEditAction(record)
                         }}
-                        ghost
                     >
                         <EditOutlined style={{ display: 'inline-flex' }} />
                     </Button>
@@ -159,14 +148,6 @@ const OrderList: React.FC = () => {
         setOrderEdit(item)
         form.setFieldValue('status', item.orderStatus)
         showModal()
-    }
-
-    const getNumTotalItems = (data: IOrder['productDetails']) => {
-        if (Array(data)) {
-            const sum = data.reduce((accumulator, currentValue) => accumulator + currentValue?.quantityOrders, 0)
-            return sum
-        }
-        return null
     }
 
     const showModal = () => {

@@ -1,71 +1,33 @@
-import { IProduct } from '@/common/interfaces/product'
-import { IReview } from '@/common/interfaces/review'
-import { GetProductsResponse, getProducts } from '@/services/product'
-import { getReviews } from '@/services/review'
 import { InfoCircleOutlined } from '@ant-design/icons'
-import { Button, Form, Select, Space, Table, TableProps } from 'antd'
+import { Button, Space, Table, TableProps } from 'antd'
 import dayjs from 'dayjs'
-import { omit } from 'lodash'
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
-const ReviewList = () => {
-    const [form] = Form.useForm()
-    const navigate = useNavigate()
-    let [searchParams, setSearchParams] = useSearchParams()
+import { IReview } from '@/common/interfaces/review'
+import { getReviews } from '@/services/review'
 
-    const [products, setProducts] = useState<IProduct[]>([])
+const ReviewList = () => {
+    const navigate = useNavigate()
+
     const [isLoading, setIsLoading] = useState(false)
-    const [isLoadingReview, setIsLoadingReview] = useState(false)
-    const [productInfo, setProductInfo] = useState<Omit<GetProductsResponse['datas'], 'docs'>>()
 
     const [reviews, setReviews] = useState<IReview[]>([])
 
-    const fetchProducts = async () => {
-        const response = await getProducts()
-        setProducts(response?.datas?.docs)
-
-        if (response?.datas) {
-            const producInfoOmit: Omit<GetProductsResponse['datas'], 'docs'> = omit(response?.datas, ['docs'])
-            setProductInfo(producInfoOmit)
-        }
-    }
-
     const fetchReviews = async () => {
-        setIsLoadingReview(true)
+        setIsLoading(true)
 
-        const input = searchParams.get('product_id') || form.getFieldValue('status')
-
-        console.log(input, 'input')
-        const response = await getReviews(input)
-        const data = response?.data
+        const response = await getReviews()
+        const data = response?.data?.filter((item) => item)
 
         if (data) {
             setReviews(data)
         }
-        setIsLoadingReview(false)
-    }
-
-    const getProductsPage = async (page: number) => {
-        const response = await getProducts({
-            _page: page
-        })
-        setProducts([...products, ...response?.datas?.docs])
-
-        const producInfoOmit: Omit<GetProductsResponse['datas'], 'docs'> = omit(response?.datas, ['docs'])
-        setProductInfo(producInfoOmit)
         setIsLoading(false)
     }
 
     useEffect(() => {
-        fetchProducts()
-    }, [])
-
-    useEffect(() => {
-        if (searchParams.get('product_id')) {
-            fetchReviews()
-        }
+        fetchReviews()
     }, [])
 
     const navigateToDetail = (id: string) => {
@@ -77,6 +39,12 @@ const ReviewList = () => {
             title: 'ID',
             dataIndex: '_id',
             key: '_id'
+        },
+        {
+            title: 'Tên sản phẩm',
+            dataIndex: 'productId',
+            key: 'productName',
+            render: (value: IReview['productId']) => value?.name
         },
         {
             title: 'Ngày tạo',
@@ -96,16 +64,20 @@ const ReviewList = () => {
             render: (value: IReview['idAccount']) => value && value?.userName
         },
         {
+            title: 'Email',
+            dataIndex: 'idAccount',
+            key: 'email',
+            render: (value: IReview['idAccount']) => value && value?.email
+        },
+        {
             title: 'Hành động',
             key: 'actions',
             render: (_, record) => (
                 <Space size='middle'>
                     <Button
-                        type='primary'
                         onClick={() => {
                             navigateToDetail(record._id)
                         }}
-                        ghost
                     >
                         <InfoCircleOutlined style={{ display: 'inline-flex' }} />
                     </Button>
@@ -116,33 +88,7 @@ const ReviewList = () => {
 
     return (
         <div className='border p-6'>
-            <Form form={form} layout='vertical'>
-                <Form.Item name='status' label='Sản phẩm'>
-                    <Select
-                        defaultValue={searchParams.get('product_id')}
-                        placeholder={'Chọn sản phẩm'}
-                        options={products}
-                        fieldNames={{
-                            value: '_id',
-                            label: 'name'
-                        }}
-                        onChange={() => {
-                            setSearchParams({ product_id: form.getFieldValue('status') })
-
-                            fetchReviews()
-                        }}
-                        onPopupScroll={(event) => {
-                            const target: any = event.target
-                            if (target.scrollTop + target.offsetHeight >= target.scrollHeight - 32 && productInfo) {
-                                if (productInfo?.page >= productInfo?.nextPage && isLoading === true) return
-                                getProductsPage(productInfo.nextPage)
-                                setIsLoading(true)
-                            }
-                        }}
-                    />
-                </Form.Item>
-            </Form>
-            <Table<IReview> dataSource={reviews} columns={columns} loading={isLoadingReview} />
+            <Table<IReview> dataSource={reviews} columns={columns} loading={isLoading} />
         </div>
     )
 }

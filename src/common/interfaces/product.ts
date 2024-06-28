@@ -1,3 +1,5 @@
+import { IOrderStatus } from './order'
+
 export interface IProduct {
     _id: string
     name: string
@@ -18,4 +20,11 @@ export interface IAddProductBody {
 export interface IAddProductResponse {
     message: string
     datas: IProduct
+}
+
+export interface IOderHistory {
+    adminId: string
+    adminName: string
+    status: IOrderStatus
+    timeStamp: Date
 }

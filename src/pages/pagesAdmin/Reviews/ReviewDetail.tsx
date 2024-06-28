@@ -18,6 +18,7 @@ interface FieldType {
     thumbnail: UploadFile[]
     gallery: UploadFile[]
     sizes: any
+    email: string
 }
 
 const colProps: ColProps = {
@@ -84,7 +85,8 @@ const ReviewDetail = () => {
                 status: product?.status,
                 thumbnail: thumbnail,
                 gallery: gallery,
-                sizes: productDetails
+                sizes: productDetails,
+                email: review?.idAccount?.email
             })
         }
     }
@@ -103,6 +105,9 @@ const ReviewDetail = () => {
                     <Input.TextArea disabled />
                 </Form.Item>
                 <Form.Item<FieldType> name='username' label='Người đánh giá'>
+                    <Input disabled />
+                </Form.Item>
+                <Form.Item<FieldType> name='email' label='Email'>
                     <Input disabled />
                 </Form.Item>
                 <Form.Item<FieldType> name='createdAt' label='Thời gian tạo'>

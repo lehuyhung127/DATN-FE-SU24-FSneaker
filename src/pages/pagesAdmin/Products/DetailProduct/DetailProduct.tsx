@@ -1,25 +1,11 @@
 import { useEffect } from 'react'
+import { Card, Col, ColProps, Form, Input, Row, Typography, Upload, UploadFile, UploadProps } from 'antd'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { IInfoProduct } from '@/common/interfaces/infoProduct'
+import Detail from '@/components/crud/detail'
 import { getInfoProduct } from '@/services/infoProduct'
 import { getProduct } from '@/services/product'
-import { ArrowLeftOutlined } from '@ant-design/icons'
-import {
-    Breadcrumb,
-    Button,
-    Card,
-    Col,
-    ColProps,
-    Form,
-    Input,
-    Row,
-    Typography,
-    Upload,
-    UploadFile,
-    UploadProps
-} from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
-import Detail from '@/components/crud/detail'
 
 const colProps: ColProps = {
     xs: 24,

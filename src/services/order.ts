@@ -9,7 +9,6 @@ export const getOrders = async (params?: GetOrdersParams) => {
     const response = await instance.get('api/order/orders', {
         params
     })
-
     return response.data
 }
 
@@ -25,5 +24,10 @@ export interface UpdateOrderBody {
 
 export const updateOrder = async (orderId: string, order: UpdateOrderBody) => {
     const response = await instance.patch(`api/order/update-order/${orderId}`, order)
+    return response.data
+}
+
+export const getOrderHistory = async (orderId: string) => {
+    const response = await instance.get(`api/order/order-history/${orderId}`)
     return response.data
 }

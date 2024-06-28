@@ -1,14 +1,28 @@
-import { IOrder } from '@/common/interfaces/order'
+import { IOrder, IOrderStatus } from '@/common/interfaces/order'
+import { IOderHistory } from '@/common/interfaces/product'
 import Detail from '@/components/crud/detail'
 import { ORDER_PAYMENT_NAMES, ORDER_PAYMENT_STATUS_NAMES, ORDER_STATUS_NAMES } from '@/constants/data'
 import { formatPrice } from '@/lib/utils'
-import { getOrder } from '@/services/order'
+import { getOrder, getOrderHistory } from '@/services/order'
 import { AntDesignOutlined } from '@ant-design/icons'
-import { Avatar, Descriptions, DescriptionsProps, Form, Input, List, Typography } from 'antd'
+import {
+    Avatar,
+    Descriptions,
+    DescriptionsProps,
+    Form,
+    Input,
+    List,
+    StepProps,
+    Steps,
+    Timeline,
+    Typography
+} from 'antd'
 import dayjs from 'dayjs'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-
+import { ClockCircleOutlined } from '@ant-design/icons'
+import { subscribe } from 'diagnostics_channel'
+import { X } from 'lucide-react'
 interface FieldType {
     code: string
     createdAt: string
@@ -26,6 +40,8 @@ const OrderDetail = () => {
     const [form] = Form.useForm()
 
     const [data, setData] = useState<IOrder>()
+
+    const [history, setHistory] = useState<IOderHistory[]>([])
 
     const fetchOrder = async () => {
         const res = await getOrder(orderId)
@@ -46,8 +62,21 @@ const OrderDetail = () => {
         }
     }
 
+    const fetchOrderHistory = async () => {
+        const res = await getOrderHistory(orderId)
+
+        if (res?.statusHistory) {
+            const data: IOderHistory[] = res?.statusHistory
+            setHistory(data?.reverse())
+        }
+    }
+
     useEffect(() => {
         fetchOrder()
+    }, [])
+
+    useEffect(() => {
+        fetchOrderHistory()
     }, [])
 
     const items: DescriptionsProps['items'] = [
@@ -87,6 +116,9 @@ const OrderDetail = () => {
                     <Form.Item<FieldType> name='orderStatus' label='Trạng thái'>
                         <Input readOnly disabled />
                     </Form.Item>
+                    <Steps progressDot current={0} status={getStatus} items={steps} />
+                    <br />
+                    <br />
                     <Form.Item<FieldType> name='paymentStatus' label='Trạng thái thanh toán'>
                         <Input readOnly disabled />
                     </Form.Item>
@@ -115,6 +147,30 @@ const OrderDetail = () => {
         )
     }
 
+    const getStatus: StepProps['status'] = useMemo(() => {
+        if (history?.length !== 0) {
+            const statuses: Record<IOrderStatus, StepProps['status']> = {
+                pending: 'process',
+                waiting: 'wait',
+                delivering: 'process',
+                done: 'finish',
+                cancel: 'error'
+            }
+            return statuses?.[history?.[0]?.status] ?? undefined
+        }
+        return undefined
+    }, [history])
+
+    const steps = useMemo(() => {
+        return history?.map((item) => {
+            return {
+                title: ORDER_STATUS_NAMES[item.status],
+                subTitle: item.adminName,
+                description: dayjs(item?.timeStamp).format('HH:MM DD-MM-YYYY')
+            }
+        })
+    }, [history])
+
     return (
         <Detail name='Đặt hàng'>
             <Descriptions
@@ -129,6 +185,7 @@ const OrderDetail = () => {
                 title={`Chi tiết đơn hàng: ${data?.codeOrders ?? ''}`}
                 items={items}
             />
+
             {renderForm()}
         </Detail>
     )

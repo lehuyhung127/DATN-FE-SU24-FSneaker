@@ -547,12 +547,14 @@ const EditProduct = () => {
                 >
                     <Upload
                         {...uploadProps}
+                        multiple={false}
+                        maxCount={1}
                         fileList={fileListThumb}
                         onChange={({ file }) => {
                             onChangeUpload(file, fileListThumb, setFileListThumb, 'thumbnail')
                         }}
                     >
-                        {uploadButton}
+                        {fileListThumb?.length === 0 && uploadButton}
                     </Upload>
                     <br />
                 </Form.Item>

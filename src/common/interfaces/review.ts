@@ -5,7 +5,7 @@ export interface IReview {
         userName: string
         email: string
     }
-    productId: string
+    productId: any
     content: string
     createdAt: Date
     updatedAt: Date

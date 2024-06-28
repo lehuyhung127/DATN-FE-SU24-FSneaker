@@ -74,11 +74,16 @@
         @apply bg-background text-foreground;
     }
 }
-/* .ant-btn-primary:not([disabled]) {
+
+@import '~antd/dist/antd.css';
+
+.ant-btn-primary:not([disabled]) {
     background: #1677ff !important;
 }
 .ant-btn-primary:not([disabled]):hover {
     background: #1f4ce0 !important;
-} */
+}
 
-@import '~antd/dist/antd.css';
+.ant-input-disabled:disabled {
+    color: #333333 !important;
+}
