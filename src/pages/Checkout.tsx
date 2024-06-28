@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 type Inputs = {
+    name: string
     address: string
     phone: string
     payment_type: 'cod' | 'vnpay'
@@ -27,6 +28,7 @@ interface CartItem {
 }
 
 interface ICreateOrderBody {
+    name: string
     address: string
     user_id: string
     phone: string
@@ -96,6 +98,7 @@ const Checkout = () => {
             // window.location.href = '/';
             const dataLocal = JSON.parse(localStorage.getItem("dataFormSelf")!);
             instance.post('http://localhost:8000/api/order/create-order', {
+                name: dataLocal.name,
                 address: dataLocal.address,
                 phone: dataLocal.phone,
                 user_id: getUserID(),
@@ -122,7 +125,7 @@ const Checkout = () => {
         if (step === 'CHECKOUT') return
         if (data.payment_type === 'vnpay') {
             try {
-                localStorage.setItem("dataFormSelf", JSON.stringify({ address: data.address, phone: data.phone, productDetails: convertCart(), total_price: totalPrice }));
+                localStorage.setItem("dataFormSelf", JSON.stringify({ name: data.name, address: data.address, phone: data.phone, productDetails: convertCart(), total_price: totalPrice }));
                 const { data: response } = await instance.post(
                     'api/order/create-order-vnpay',
                     {
@@ -215,6 +218,19 @@ const Checkout = () => {
 
                                     <div className='form__profile'>
                                         <div>
+                                            <div className='relative z-0 w-full mb-5 group border rounded'>
+                                                <input
+                                                    type='text'
+                                                    className='block py-2.5 px-4 w-full text-sm text-gray-900 bg-transparent border-0 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
+                                                    placeholder=''
+                                                    {...register('name', {
+                                                        required: true
+                                                    })}
+                                                />
+                                                <label className='peer-focus:font-medium absolute px-3 text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 bg-white'>
+                                                    Tên người nhận
+                                                </label>
+                                            </div>
                                             <div className='relative z-0 w-full mb-5 group border rounded'>
                                                 <input
                                                     type='text'
